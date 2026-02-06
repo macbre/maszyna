@@ -9,14 +9,6 @@ jobs:
   make:
     runs-on: ubuntu-latest
 
-    # https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/run-jobs-in-a-container
-    # MaSzyna requires Pythnon 2.7 (Ubuntu's runners no longer support Python 2.x)
-    # See https://github.com/MaSzyna-EU07/maszyna/pull/41
-    container:
-      image: python:2.7.9
-      # volumes:
-      # - my_docker_volume:/volume_mount
-
     steps:
     - uses: actions/checkout@v4
       with:
@@ -46,6 +38,18 @@ jobs:
           libsndfile1-dev \
           librust-wayland-protocols-dev \
           waylandpp-dev
+    
+    # MaSzyna requires Pythnon 2.7 (Ubuntu's runners no longer support Python 2.x)
+    # See https://github.com/MaSzyna-EU07/maszyna/pull/41
+    - name: Install Python 2.7
+      run: |
+        set -x
+        # https://github.com/pyenv/pyenv
+        curl -fsSL https://pyenv.run | bash
+
+        pyenv install -l
+        pyenv install 2.7
+        pyenv global 2.7
 
     - name: Build
       run: |
