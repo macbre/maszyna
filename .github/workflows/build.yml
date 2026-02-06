@@ -26,6 +26,7 @@ jobs:
           libglew-dev \
           libglfw3-dev \
           python3-dev \
+          bzip2 \
           libxkbcommon-dev \
           libxinerama-dev \
           libxcursor-dev \
@@ -55,10 +56,12 @@ jobs:
         eval "$(pyenv init - bash)"
 
         pyenv prefix
-        # needs libreadline
+        # needs libreadline and bzip2
         pyenv install ${PYTHON_VERSION}
         pyenv versions
         pyenv global ${PYTHON_VERSION}
+
+        ls $(pyenv root)
 
     - name: Build
       run: |
