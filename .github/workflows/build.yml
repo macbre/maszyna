@@ -29,6 +29,7 @@ jobs:
           libxkbcommon-dev \
           libxinerama-dev \
           libxcursor-dev \
+          libxi-dev \
           libasio-dev \
           libpng-dev \
           libopenal-dev \
