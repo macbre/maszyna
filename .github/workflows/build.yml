@@ -11,6 +11,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        # Whether to checkout submodules: `true` to checkout submodules or `recursive` to
+        # recursively checkout submodules.
+        submodules: 'recursive'
 
     # https://github.com/macbre/maszyna?tab=readme-ov-file#linux
     - name: Install dependencies
