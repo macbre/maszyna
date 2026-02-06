@@ -34,11 +34,19 @@ jobs:
       run: |
         set -x
 
+        # Show some versions
+        python3 -V
+
         # Create directory for CMake build files
         mkdir build && cd build
 
-        #  Generate Makefiles (NVRHI is not supported on Linux)
-        cmake .. -DWITH_BETTER_RENDERER=OFF
+        # Generate Makefiles:
+        # * NVRHI is not supported on Linux
+        # * -DPYTHON: https://stackoverflow.com/a/38121972/5446110
+        cmake .. \
+          -DWITH_BETTER_RENDERER=OFF \
+          -DPYTHON_INCLUDE_DIR=$(python3 -c "import sysconfig; print(sysconfig.get_path('include'))") \
+          -DPYTHON_LIBRARY=$(python3 -c "import sysconfig; print(sysconfig.get_config_var('LIBDIR'))")
 
         # Compile using all cores
         make -j"$(nproc)"
