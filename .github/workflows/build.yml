@@ -27,6 +27,7 @@ jobs:
           libglfw3-dev \
           python3-dev \
           libxkbcommon-dev \
+          libxinerama-dev \
           libasio-dev \
           libpng-dev \
           libopenal-dev \
