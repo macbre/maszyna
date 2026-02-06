@@ -33,7 +33,7 @@ jobs:
           libasio-dev \
           libpng-dev \
           libopenal-dev \
-          libreadline6 \
+          libreadline-dev \
           libluajit-5.1-dev \
           libserialport-dev \
           libsndfile1-dev \
