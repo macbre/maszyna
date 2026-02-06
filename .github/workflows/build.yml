@@ -22,6 +22,7 @@ jobs:
           libglew-dev \
           libglfw3-dev \
           python3-dev \
+          libasio-dev \
           libpng-dev \
           libopenal-dev \
           libluajit-5.1-dev \
