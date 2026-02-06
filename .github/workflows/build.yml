@@ -33,6 +33,7 @@ jobs:
           libasio-dev \
           libpng-dev \
           libopenal-dev \
+          libreadline6 \
           libluajit-5.1-dev \
           libserialport-dev \
           libsndfile1-dev \
@@ -42,6 +43,8 @@ jobs:
     # MaSzyna requires Pythnon 2.7 (Ubuntu's runners no longer support Python 2.x)
     # See https://github.com/MaSzyna-EU07/maszyna/pull/41
     - name: Install Python 2.7
+      env:
+        PYTHON_VERSION: "2.7"
       run: |
         set -x
         # https://github.com/pyenv/pyenv
@@ -51,9 +54,11 @@ jobs:
         [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
         eval "$(pyenv init - bash)"
 
-        pyenv install -l
-        pyenv install 2.7
-        pyenv global 2.7
+        pyenv prefix
+        # needs libreadline
+        pyenv install ${PYTHON_VERSION}
+        pyenv versions
+        pyenv global ${PYTHON_VERSION}
 
     - name: Build
       run: |
