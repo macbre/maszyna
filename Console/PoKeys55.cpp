@@ -10,7 +10,7 @@ http://mozilla.org/MPL/2.0/.
 #include "stdafx.h"
 #include "PoKeys55.h"
 #include <setupapi.h>
-#include "utilities.h"
+#include "utilities/utilities.h"
 
 //---------------------------------------------------------------------------
 // HIDscaner: http://forum.simflight.com/topic/68257-latest-lua-package-for-fsuipc-and-wideclient/
@@ -76,13 +76,13 @@ bool TPoKeys55::Connect()
     // First populate a list of plugged in devices (by specifying "DIGCF_PRESENT"), which are of the
     // specified class GUID.
     DeviceInfoTable =
-        SetupDiGetClassDevs(&InterfaceClassGuid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+        SetupDiGetClassDevs(&InterfaceClassGuid, nullptr, nullptr, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
     // Now look through the list we just populated.  We are trying to see if any of them match our
     // device.
     while (true)
     {
         InterfaceDataStructure->cbSize = sizeof(SP_DEVICE_INTERFACE_DATA);
-        if (SetupDiEnumDeviceInterfaces(DeviceInfoTable, NULL, &InterfaceClassGuid, InterfaceIndex,
+        if (SetupDiEnumDeviceInterfaces(DeviceInfoTable, nullptr, &InterfaceClassGuid, InterfaceIndex,
                                         InterfaceDataStructure))
         {
             ErrorStatus = GetLastError();
@@ -113,11 +113,11 @@ bool TPoKeys55::Connect()
         // First query for the size of the hardware ID, so we can know how big a buffer to allocate
         // for the data.
         SetupDiGetDeviceRegistryProperty(DeviceInfoTable, &DevInfoData, SPDRP_HARDWAREID,
-                                         &dwRegType, NULL, 0, &dwRegSize);
+                                         &dwRegType, nullptr, 0, &dwRegSize);
         // Allocate a buffer for the hardware ID.
         // PropertyValueBuffer=(BYTE*)malloc(dwRegSize);
         PropertyValueBuffer = new BYTE[dwRegSize];
-        if (PropertyValueBuffer == NULL) // if null,error,couldn't allocate enough memory
+        if (PropertyValueBuffer == nullptr) // if null,error,couldn't allocate enough memory
         { // Can't really recover from this situation,just exit instead.
             // ShowMessage("Allocation PropertyValueBuffer impossible");
             SetupDiDestroyDeviceInfoList(
@@ -132,7 +132,7 @@ bool TPoKeys55::Connect()
         // and PID,in the example
         // format "Vid_04d8&Pid_003f".
         SetupDiGetDeviceRegistryProperty(DeviceInfoTable, &DevInfoData, SPDRP_HARDWAREID,
-                                         &dwRegType, PropertyValueBuffer, dwRegSize, NULL);
+                                         &dwRegType, PropertyValueBuffer, dwRegSize, nullptr);
         // Now check if the first string in the hardware ID matches the device ID of my USB device.
         // ListBox1->Items->Add((char*)PropertyValueBuffer);
         DeviceIDFromRegistry = reinterpret_cast<char*>(PropertyValueBuffer);
@@ -145,7 +145,7 @@ bool TPoKeys55::Connect()
         DeviceIDFromRegistry = ToLower( DeviceIDFromRegistry );
         DeviceIDToFind = ToLower( DeviceIDToFind );
         // Now check if the hardware ID we are looking at contains the correct VID/PID
-        MatchFound = ( contains( DeviceIDFromRegistry, DeviceIDToFind ) );
+        MatchFound = contains(DeviceIDFromRegistry, DeviceIDToFind);
         if (MatchFound == true)
         {
             // Device must have been found.  Open read and write handles.  In order to do this,we
@@ -157,12 +157,11 @@ bool TPoKeys55::Connect()
             // get the structure (after we have allocated enough memory for the structure.)
             DetailedInterfaceDataStructure->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
             // First call populates "StructureSize" with the correct value
-            SetupDiGetDeviceInterfaceDetail(DeviceInfoTable, InterfaceDataStructure, NULL, 0,
-                                            &StructureSize, NULL);
+            SetupDiGetDeviceInterfaceDetail(DeviceInfoTable, InterfaceDataStructure, nullptr, 0,
+                                            &StructureSize, nullptr);
             DetailedInterfaceDataStructure =
-                (PSP_DEVICE_INTERFACE_DETAIL_DATA)(malloc(StructureSize)); // Allocate enough memory
-            if (DetailedInterfaceDataStructure ==
-                NULL) // if null,error,couldn't allocate enough memory
+                (PSP_DEVICE_INTERFACE_DETAIL_DATA)malloc(StructureSize); // Allocate enough memory
+            if (DetailedInterfaceDataStructure == nullptr) // if null,error,couldn't allocate enough memory
             { // Can't really recover from this situation,just exit instead.
                 SetupDiDestroyDeviceInfoList(
                     DeviceInfoTable); // Clean up the old structure we no longer need.
@@ -171,19 +170,18 @@ bool TPoKeys55::Connect()
             DetailedInterfaceDataStructure->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
             // Now call SetupDiGetDeviceInterfaceDetail() a second time to receive the goods.
             SetupDiGetDeviceInterfaceDetail(DeviceInfoTable, InterfaceDataStructure,
-                                            DetailedInterfaceDataStructure, StructureSize, NULL,
-                                            NULL);
+                                            DetailedInterfaceDataStructure, StructureSize, nullptr, nullptr);
             // We now have the proper device path,and we can finally open read and write handles to
             // the device.
             // We store the handles in the global variables "WriteHandle" and "ReadHandle",which we
             // will use later to actually communicate.
-            WriteHandle = CreateFile((DetailedInterfaceDataStructure->DevicePath), GENERIC_WRITE,
-                                     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
+            WriteHandle = CreateFile(DetailedInterfaceDataStructure->DevicePath, GENERIC_WRITE,
+                                     FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
             ErrorStatus = GetLastError();
             // if (ErrorStatus==ERROR_SUCCESS)
             // ToggleLedBtn->Enabled=true;//Make button no longer greyed out
-            ReadHandle = CreateFile((DetailedInterfaceDataStructure->DevicePath), GENERIC_READ,
-                                    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
+            ReadHandle = CreateFile(DetailedInterfaceDataStructure->DevicePath, GENERIC_READ,
+                                    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, 0);
             ErrorStatus = GetLastError();
             if (ErrorStatus == ERROR_SUCCESS)
             {
@@ -224,7 +222,7 @@ bool TPoKeys55::Write(unsigned char c, unsigned char b3, unsigned char b4, unsig
     // The following call to WriteFile() sends 64 bytes of data to the USB device.
     WriteFile(WriteHandle, &OutputBuffer, 65, &BytesWritten,
               0); // Blocking function, unless an "overlapped" structure is used
-    return (BytesWritten == 65);
+    return BytesWritten == 65;
     // Read(); //odczyt trzeba zrobić inaczej - w tym miejscu będzie za szybko i nic się nie odczyta
 }
 
@@ -242,7 +240,7 @@ bool TPoKeys55::Read()
     // InputPacketBuffer[0] is the report ID, which we don't care about.
     // InputPacketBuffer[1] is an echo back of the command.
     // InputPacketBuffer[2] contains the I/O port pin value for the pushbutton.
-    return (BytesRead == 65) ? InputBuffer[7] == cRequest : false;
+    return BytesRead == 65 ? InputBuffer[7] == cRequest : false;
 }
 //---------------------------------------------------------------------------
 bool TPoKeys55::ReadLoop(int i)
@@ -307,13 +305,13 @@ bool TPoKeys55::Update(bool pause)
     {
     case 0: // uaktualnienie PWM raz na jakiś czas
         OutputBuffer[9] = 0x3F; // maska użytych PWM
-        *((int *)(OutputBuffer + 10)) = iPWM[0]; // PWM1 (pin 22)
-        *((int *)(OutputBuffer + 14)) = iPWM[1]; // PWM2 (pin 21)
-        *((int *)(OutputBuffer + 18)) = iPWM[2]; // PWM3 (pin 20)
-        *((int *)(OutputBuffer + 22)) = iPWM[3]; // PWM4 (pin 19)
-        *((int *)(OutputBuffer + 26)) = iPWM[4]; // PWM5 (pin 18)
-        *((int *)(OutputBuffer + 30)) = iPWM[5]; // PWM6 (pin 17)
-        *((int *)(OutputBuffer + 34)) = iPWM[7]; // PWM period
+        *(int *)(OutputBuffer + 10) = iPWM[0]; // PWM1 (pin 22)
+        *(int *)(OutputBuffer + 14) = iPWM[1]; // PWM2 (pin 21)
+        *(int *)(OutputBuffer + 18) = iPWM[2]; // PWM3 (pin 20)
+        *(int *)(OutputBuffer + 22) = iPWM[3]; // PWM4 (pin 19)
+        *(int *)(OutputBuffer + 26) = iPWM[4]; // PWM5 (pin 18)
+        *(int *)(OutputBuffer + 30) = iPWM[5]; // PWM6 (pin 17)
+        *(int *)(OutputBuffer + 34) = iPWM[7]; // PWM period
         if (Write(0xCB, 1)) // wysłanie ustawień (1-ustaw, 0-odczyt)
             iRepeats = 0; // informacja, że poszło dobrze
         ++iFaza; // ta faza została zakończona
@@ -342,7 +340,7 @@ bool TPoKeys55::Update(bool pause)
             Write(0x31, 0); // 0x31: blokowy odczyt wejść
         else if (Read())
         { // jest odebrana ramka i zgodność numeru żądania
-            iInputs[0] = *((int *)(InputBuffer + 3)); // odczyt 32 bitów
+            iInputs[0] = *(int *)(InputBuffer + 3); // odczyt 32 bitów
             iFaza = 3; // skoro odczytano, można kolejny cykl
             iRepeats = 0; // zerowanie licznika prób
         }
@@ -350,7 +348,7 @@ bool TPoKeys55::Update(bool pause)
             ++iRepeats; // licznik nieudanych prób
         break;
     case 3: // ustawienie wyjść analogowych, 0..4095 mapować na 0..65520 (<<4)
-        if (Write(0x41, 43 - 1, (iPWM[6] >> 4), (iPWM[6] << 4))) // wysłanie ustawień
+        if (Write(0x41, 43 - 1, iPWM[6] >> 4, iPWM[6] << 4)) // wysłanie ustawień
             iRepeats = 0; // informacja, że poszło dobrze
         iFaza = 0; //++iFaza; //ta faza została zakończona
         // powinno jeszcze przyjść potwierdzenie o kodzie 0x41
@@ -368,7 +366,7 @@ bool TPoKeys55::Update(bool pause)
         iRepeats = 1; // w nowej fazie nowe szanse, ale nie od 0!
         bNoError = false; // zgłosić błąd
     }
-    return (bNoError); // true oznacza prawidłowe działanie
+    return bNoError; // true oznacza prawidłowe działanie
     // czy w przypadku błędu komunikacji z PoKeys włączać pauzę?
     // dopiero poprawne podłączenie zeruje licznik prób
 };

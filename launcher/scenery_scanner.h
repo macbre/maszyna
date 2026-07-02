@@ -1,9 +1,8 @@
 #pragma once
 
 #include <filesystem>
-#include "Texture.h"
-#include "utilities.h"
-#include "parser.h"
+#include "model/Texture.h"
+#include "utilities/parser.h"
 #include "textures_scanner.h"
 
 struct dynamic_desc {

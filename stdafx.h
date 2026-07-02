@@ -89,10 +89,17 @@
 #define glfwFocusWindow(w)
 #endif
 
+#if defined(__aarch64__) || defined(__arm64__)
+#define GLM_FORCE_NEON
+#else
 #define GLM_FORCE_AVX2
+#endif
 #define GLM_FORCE_SWIZZLE
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_CTOR_INIT
+#define GLM_FORCE_INLINE
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_FORCE_INTRINSICS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_transform_2d.hpp>
@@ -105,9 +112,15 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#ifndef PACKED_VEC3_DEFINED
+#define PACKED_VEC3_DEFINED
+// 12-byte vec3 that stays packed regardless of GLM_FORCE_DEFAULT_ALIGNED_GENTYPES.
+// Use in structs that must match an exact binary layout (UBOs, vertex data, serialized formats).
+using packed_vec3 = glm::vec<3, float, glm::packed_highp>;
+#endif
 
 
-#include "openglmatrixstack.h"
+#include "rendering/openglmatrixstack.h"
 #define STRINGIZE_DETAIL(x) #x
 #define STRINGIZE(x) STRINGIZE_DETAIL(x)
 #define glDebug(x) if (GLAD_GL_GREMEDY_string_marker) glStringMarkerGREMEDY(0, __FILE__ ":" STRINGIZE(__LINE__) ": " x);
@@ -115,6 +128,6 @@
 #include "imgui/imgui.h"
 #define ImVec2S(a, b) ImVec2(a * Global.ui_scale, b * Global.ui_scale)
 
-#include "crashreporter.h"
+#include "utilities/crashreporter.h"
 
 #endif

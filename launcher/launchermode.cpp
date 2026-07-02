@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "launcher/launchermode.h"
 #include "launcher/launcheruilayer.h"
-#include "application.h"
-#include "simulation.h"
-#include "Globals.h"
+#include "application/application.h"
+#include "simulation/simulation.h"
+#include "utilities/Globals.h"
 
 launcher_mode::launcher_mode()
 {
@@ -35,9 +35,9 @@ void launcher_mode::exit()
 void launcher_mode::on_key(const int Key, const int Scancode, const int Action, const int Mods)
 {
 #ifndef __unix__
-	Global.shiftState = (Mods & GLFW_MOD_SHIFT) ? true : false;
-	Global.ctrlState = (Mods & GLFW_MOD_CONTROL) ? true : false;
-	Global.altState = (Mods & GLFW_MOD_ALT) ? true : false;
+	Global.shiftState = Mods & GLFW_MOD_SHIFT ? true : false;
+	Global.ctrlState = Mods & GLFW_MOD_CONTROL ? true : false;
+	Global.altState = Mods & GLFW_MOD_ALT ? true : false;
 #endif
 	m_userinterface->on_key(Key, Action);
 }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "launcher/vehicle_picker.h"
-#include "renderer.h"
-#include "translation.h"
+#include "rendering/renderer.h"
+#include "utilities/translation.h"
 
 ui::vehiclepicker_panel::vehiclepicker_panel()
     : ui_panel(STR("Select vehicle"), false), placeholder_mini("textures/mini/other")
@@ -47,15 +47,15 @@ void ui::vehiclepicker_panel::render_contents()
 
 			bool model_added = false;
 			bool can_break = false;
-			bool map_sel_eq = (selected_group && group == *selected_group);
+			bool map_sel_eq = selected_group && group == *selected_group;
 
 			for (auto const &vehicle : kv.second) {
 				if (vehicle->type != selected_type)
 					continue;
 
 				for (auto const &skinset : vehicle->matching_skinsets) {
-					bool map_group_eq = (skinset->group == group);
-					bool sel_group_eq = (selected_group && skinset->group == *selected_group);
+					bool map_group_eq = skinset->group == group;
+					bool sel_group_eq = selected_group && skinset->group == *selected_group;
 
 					if (!model_added && map_group_eq) {
 						model_list.push_back(&group);
@@ -253,7 +253,7 @@ bool ui::vehiclepicker_panel::skin_filter(const skin_set *skin, std::vector<sear
 			return true;
 	}
 
-	return alternative_present ? (!any) : false;
+	return alternative_present ? !any : false;
 }
 
 bool ui::vehiclepicker_panel::selectable_image(const char *desc, bool selected, const deferred_image* image, const skin_set *pickable)
@@ -274,7 +274,7 @@ bool ui::vehiclepicker_panel::selectable_image(const char *desc, bool selected, 
 		glm::ivec2 size = image->size();
 		float width = 30.0f / size.y * size.x;
 		ImGui::SameLine(ImGui::GetContentRegionAvail().x - width);
-		ImGui::Image(reinterpret_cast<void*>(tex), ImVec2(width, 30), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image((ImTextureID)(intptr_t)tex, ImVec2(width, 30), ImVec2(0, 1), ImVec2(1, 0));
 
 		if (pickable) {
 			ImGui::PushID((void*)image);
@@ -282,7 +282,7 @@ bool ui::vehiclepicker_panel::selectable_image(const char *desc, bool selected, 
 			ImGui::InvisibleButton(desc, ImVec2(width, 30));
 
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAutoExpirePayload)) {
-				ImGui::Image(reinterpret_cast<void*>(tex), ImVec2(width, 30), ImVec2(0, 1), ImVec2(1, 0));
+				ImGui::Image((ImTextureID)(intptr_t)tex, ImVec2(width, 30), ImVec2(0, 1), ImVec2(1, 0));
 
 				ImGui::SetDragDropPayload("vehicle_pure", &pickable, sizeof(skin_set*));
 				ImGui::EndDragDropSource();

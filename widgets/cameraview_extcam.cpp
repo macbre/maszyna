@@ -5,8 +5,8 @@
 #include "stdafx.h"
 #include "widgets/cameraview_extcam.h"
 #include "stb/stb_image.h"
-#include "Globals.h"
-#include "translation.h"
+#include "utilities/Globals.h"
+#include "utilities/translation.h"
 #include "extras/piped_proc.h"
 
 ui::cameraview_panel::cameraview_panel()
@@ -113,7 +113,7 @@ void ui::cameraview_panel::render_contents()
 	}
 
 	ImVec2 surface_size = ImGui::GetContentRegionAvail();
-	ImGui::Image(reinterpret_cast<void*>(texture->id), surface_size);
+	ImGui::Image((ImTextureID)(intptr_t)(texture->id), surface_size);
 }
 
 void ui::cameraview_panel::capture_func()

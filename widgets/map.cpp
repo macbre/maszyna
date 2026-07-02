@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "widgets/map.h"
 #include "widgets/map_objects.h"
-#include "Logs.h"
-#include "Train.h"
-#include "Camera.h"
-#include "simulation.h"
-#include "Driver.h"
-#include "AnimModel.h"
-#include "application.h"
+#include "utilities/Logs.h"
+#include "vehicle/Train.h"
+#include "vehicle/Camera.h"
+#include "simulation/simulation.h"
+#include "vehicle/Driver.h"
+#include "model/AnimModel.h"
+#include "application/application.h"
 
 ui::map_panel::map_panel() : ui_panel(STR_C("Map"), false)
 {
@@ -299,7 +299,7 @@ void ui::map_panel::render_contents()
 
 	ImVec2 window_origin = ImGui::GetCursorPos();
 	ImVec2 screen_origin = ImGui::GetCursorScreenPos();
-	ImGui::ImageButton(reinterpret_cast<void *>(m_tex->id), surface_size_im, ImVec2(0, surface_size.y / fb_size), ImVec2(surface_size.x / fb_size, 0), 0);
+	ImGui::ImageButton((ImTextureID)(intptr_t)(m_tex->id), surface_size_im, ImVec2(0, surface_size.y / fb_size), ImVec2(surface_size.x / fb_size, 0), 0);
 
 	if (ImGui::IsItemHovered())
 	{

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "scenery_scanner.h"
-#include "Logs.h"
+#include "utilities/Logs.h"
 
 scenery_scanner::scenery_scanner(ui::vehicles_bank &bank)
     : bank(bank)
@@ -13,10 +13,10 @@ void scenery_scanner::scan()
 	for (auto &f : std::filesystem::directory_iterator("scenery")) {
 		std::filesystem::path path(std::filesystem::relative(f.path(), "scenery/"));
 
-		if (*(path.filename().string().begin()) == '$')
+		if (*path.filename().string().begin() == '$')
 			continue;
 
-		if (string_ends_with(path.string(), ".scn"))
+		if (path.string().ends_with(".scn"))
 			scan_scn(path);
 	}
 
@@ -50,7 +50,7 @@ void scenery_scanner::scan_scn(std::filesystem::path path)
 	{
 		line_counter++;
 
-		if (line.size() < 6 || !string_starts_with(line, "//$"))
+		if (line.size() < 6 || !line.starts_with("//$"))
 			continue;
 
 		if (line[3] == 'i')

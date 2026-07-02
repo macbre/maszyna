@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "widgets/time.h"
-#include "simulationtime.h"
-#include "Globals.h"
+#include "simulation/simulationtime.h"
+#include "utilities/Globals.h"
 
 ui::time_panel::time_panel() : ui_panel(STR_C("Time and environment"), false)
 {
@@ -20,7 +20,7 @@ void ui::time_panel::render_contents()
 	{
         m_relay.post(user_command::setdatetime, (double)yearday, time * 60.0, 1, 0);
 		m_relay.post(user_command::setweather, fog, overcast, 1, 0);
-		m_relay.post(user_command::settemperature, temperature, 0.0, 1, 0);
+		m_relay.post(user_command::settemperature, temperature, overcast, 1, 0);
 	}
 }
 

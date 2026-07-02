@@ -1,14 +1,14 @@
 ﻿#include "nvtexture.h"
 #include "nvrenderer/nvrenderer.h"
 
-#include <Globals.h>
-#include <PyInt.h>
-#include <application.h>
-#include <dictionary.h>
+#include <utilities/Globals.h>
+#include <scripting/PyInt.h>
+#include <application/application.h>
+#include <utilities/dictionary.h>
 #include <fmt/format.h>
-#include <utilities.h>
+#include <utilities/utilities.h>
 
-#include "Logs.h"
+#include "utilities/Logs.h"
 // #include "Texture.h"
 #include "nvrendererbackend.h"
 #include "stbi/stb_image.h"
@@ -305,7 +305,7 @@ size_t NvTextureManager::FetchTexture(std::string path, int format_hint,
     path = ToLower(path);
     // temporary code for legacy assets -- textures with names beginning with #
     // are to be sharpened
-    if ((starts_with(path, "#")) || (contains(path, "/#"))) {
+    if (path.starts_with("#") || contains(path, "/#")) {
       traits += '#';
     }
   }
@@ -314,7 +314,7 @@ size_t NvTextureManager::FetchTexture(std::string path, int format_hint,
 
   {
     const std::array<std::string, 3> filenames{
-        Global.asCurrentTexturePath + path, path, szTexturePath + path};
+        Global.asCurrentTexturePath + path, path, paths::textures + path};
     for (const auto &filename : filenames) {
       if (auto found = m_texture_map.find(filename);
           found != m_texture_map.end())
@@ -415,7 +415,7 @@ bool NvTexture::CreateRhiTexture() {
   backend->GetDevice()->executeCommandList(command_list,
                                            nvrhi::CommandQueue::Graphics);
   if (m_sz_texture->get_type() == "make:") {
-    auto const components{Split(std::string(m_sz_texture->get_name()), '?')};
+    auto const components{Split(m_sz_texture->get_name(), '?')};
 
     auto dictionary = std::make_shared<dictionary_source>(components.back());
 

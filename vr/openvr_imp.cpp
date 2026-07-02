@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "openvr_imp.h"
-#include "Logs.h"
-#include "Globals.h"
-#include "renderer.h"
-#include "simulation.h"
-#include "application.h"
+#include "utilities/Logs.h"
+#include "utilities/Globals.h"
+#include "rendering/renderer.h"
+#include "simulation/simulation.h"
+#include "application/application.h"
 
 vr_openvr::vr_openvr()
 {
@@ -687,9 +687,12 @@ std::unordered_map<std::string, vr_openvr::button_bindings> vr_openvr::m_buttonb
     { "radiotest_sw:", {
         user_command::radiostoptest,
         user_command::none } },
-    { "radiocall3_sw:", {
-        user_command::radiocall3send,
-        user_command::none } },
+	{ "radiocall1_sw:", {
+		user_command::radiocall1send,
+		user_command::none } },
+	{ "radiocall3_sw:", {
+		user_command::radiocall3send,
+		user_command::none } },
     { "radiovolume_sw:",{
         user_command::radiovolumeincrease,
         user_command::radiovolumedecrease } },

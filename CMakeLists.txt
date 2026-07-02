@@ -45,7 +45,19 @@ file(GLOB HEADERS "*.h"
 "widgets/*.h"
 "launcher/*.h"
 "extras/*.h"
-"global_include/*.h")
+"global_include/*.h"
+"simulation/*.h"
+"scene/*.h"
+"rendering/*.h"
+"audio/*.h"
+"environment/*.h"
+"application/*.h"
+"input/*.h"
+"scripting/*.h"
+"model/*.h"
+"utilities/*.h"
+"world/*.h"
+"vehicle/*.h")
 
 set(GLOBAL_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(GLOBAL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/global_include")
@@ -57,7 +69,7 @@ endif()
 
 option(WITH_OPENGL_MODERN "Compile with OpenGL modern renderer" ON)
 option(WITH_OPENGL_LEGACY "Compile with OpenGL legacy renderer" ON)
-option(WITH_PYTHON "Compile with python2" ON)
+option(WITH_PYTHON "Python 3.14 embedded scripting" ON)
 option(WITH_UART "Compile with libserialport" ON)
 option(WITH_LUA "Compile with lua scripting support" ON)
 option(WITH_OPENVR "Compile with OpenVR" OFF)
@@ -69,7 +81,8 @@ option(WITH_BETTER_RENDERER "Experimental multi-backend renderer based on NVRHI"
 option(GENERATE_PDB "Generate executable with program debugging symbols" ON)
 option(ENABLE_MCC "Enable multicore compilation" ON)
 option(WITHDUMPGEN "Enable generating DMP files on crash" ON)
-
+option(ENABLE_AVX2 "Enable AVX2 instruction set (requires AVX2-capable CPU, Haswell/2013 or newer)" ON)
+option(ADD_VERSION_SUFFIX "Add date and commit hash to the executable name" ON)
 set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 # vcpkg init
@@ -79,101 +92,102 @@ list(APPEND CMAKE_PREFIX_PATH "${VCPKG_INSTALLED_PATH}")
 list(APPEND CMAKE_MODULE_PATH "${VCPKG_INSTALLED_PATH}/share")
 
 set(SOURCES
-"Texture.cpp"
-"Timer.cpp"
-"Track.cpp"
-"Traction.cpp"
-"TractionPower.cpp"
-"Train.cpp"
-"TrkFoll.cpp"
-"AirCoupler.cpp"
-"AnimModel.cpp"
-"Button.cpp"
-"Camera.cpp"
-"Driver.cpp"
-"driverhints.cpp"
-"dumb3d.cpp"
-"DynObj.cpp"
+"model/Texture.cpp"
+"utilities/Timer.cpp"
+"world/Track.cpp"
+"world/Traction.cpp"
+"world/TractionPower.cpp"
+"vehicle/Train.cpp"
+"world/TrkFoll.cpp"
+"vehicle/AirCoupler.cpp"
+"model/AnimModel.cpp"
+"vehicle/Button.cpp"
+"vehicle/Camera.cpp"
+"vehicle/Driver.cpp"
+"application/driverhints.cpp"
+"vehicle/DynObj.cpp"
 "EU07.cpp"
 "export_e3d_standalone.cpp"
-"Event.cpp"
-"EvLaunch.cpp"
-"Float3d.cpp"
-"Gauge.cpp"
-"Globals.cpp"
-"Logs.cpp"
+"world/Event.cpp"
+"world/EvLaunch.cpp"
+"utilities/Float3d.cpp"
+"vehicle/Gauge.cpp"
+"utilities/Globals.cpp"
+"utilities/Logs.cpp"
 "McZapkie/friction.cpp"
 "McZapkie/hamulce.cpp"
 "McZapkie/Mover.cpp"
 "McZapkie/Oerlikon_ESt.cpp"
-"MdlMngr.cpp"
-"MemCell.cpp"
-"Model3d.cpp"
-"mtable.cpp"
-"parser.cpp"
-"nullrenderer.cpp"
-"renderer.cpp"
-"ResourceManager.cpp"
-"sn_utils.cpp"
-"Segment.cpp"
-"sky.cpp"
-"sun.cpp"
-"stars.cpp"
-"lightarray.cpp"
-"skydome.cpp"
-"sound.cpp"
-"Spring.cpp"
-"frustum.cpp"
-"uilayer.cpp"
-"openglmatrixstack.cpp"
-"moon.cpp"
-"command.cpp"
-"keyboardinput.cpp"
-"gamepadinput.cpp"
-"drivermouseinput.cpp"
-"translation.cpp"
-"material.cpp"
+"model/MdlMngr.cpp"
+"world/MemCell.cpp"
+"model/Model3d.cpp"
+"world/mtable.cpp"
+"utilities/parser.cpp"
+"rendering/nullrenderer.cpp"
+"rendering/renderer.cpp"
+"model/ResourceManager.cpp"
+"scene/sn_utils.cpp"
+"world/Segment.cpp"
+"environment/sky.cpp"
+"environment/sun.cpp"
+"environment/stars.cpp"
+"rendering/lightarray.cpp"
+"environment/skydome.cpp"
+"audio/sound.cpp"
+"world/Spring.cpp"
+"rendering/frustum.cpp"
+"application/uilayer.cpp"
+"rendering/openglmatrixstack.cpp"
+"environment/moon.cpp"
+"input/command.cpp"
+"input/keyboardinput.cpp"
+"input/gamepadinput.cpp"
+"input/drivermouseinput.cpp"
+"utilities/translation.cpp"
+"model/material.cpp"
 "stdafx.cpp"
-"messaging.cpp"
-"scene.cpp"
-"scenenode.cpp"
-"simulation.cpp"
-"vertex.cpp"
-"audio.cpp"
-"audiorenderer.cpp"
-"motiontelemetry.cpp"
-"utilities.cpp"
-"uitranscripts.cpp"
-"station.cpp"
-"application.cpp"
-"simulationtime.cpp"
-"sceneeditor.cpp"
-"screenshot.cpp"
-"driverkeyboardinput.cpp"
-"drivermode.cpp"
-"driveruilayer.cpp"
-"driveruipanels.cpp"
-"editorkeyboardinput.cpp"
-"editormode.cpp"
-"editormouseinput.cpp"
-"editoruilayer.cpp"
-"editoruipanels.cpp"
-"scenarioloadermode.cpp"
-"scenarioloaderuilayer.cpp"
-"scenenodegroups.cpp"
-"simulationenvironment.cpp"
-"simulationstateserializer.cpp"
-"precipitation.cpp"
-"pythonscreenviewer.cpp"
-"dictionary.cpp"
-"particles.cpp"
-"headtrack.cpp"
-"headtrack.h"
-"ladderlogic.cpp"
-"geometrybank.cpp"
-"openglcolor.cpp"
-"simulationsounds.cpp"
-"openglcamera.cpp"
+"input/messaging.cpp"
+"scene/scene.cpp"
+"scene/scenenode.cpp"
+"simulation/simulation.cpp"
+"model/vertex.cpp"
+"audio/audio.cpp"
+"audio/audiorenderer.cpp"
+"utilities/motiontelemetry.cpp"
+"utilities/utilities.cpp"
+"application/uitranscripts.cpp"
+"world/station.cpp"
+"application/application.cpp"
+"simulation/simulationtime.cpp"
+"scene/sceneeditor.cpp"
+"rendering/screenshot.cpp"
+"input/driverkeyboardinput.cpp"
+"application/drivermode.cpp"
+"application/driveruilayer.cpp"
+"application/driveruipanels.cpp"
+"input/editorkeyboardinput.cpp"
+"editor/editorSettings.cpp"
+"editor/editorTerrain.cpp"
+"editor/editorTerrainStreamer.cpp"
+"application/editormode.cpp"
+"input/editormouseinput.cpp"
+"application/editoruilayer.cpp"
+"application/editoruipanels.cpp"
+"application/scenarioloadermode.cpp"
+"application/scenarioloaderuilayer.cpp"
+"scene/scenenodegroups.cpp"
+"simulation/simulationenvironment.cpp"
+"simulation/simulationstateserializer.cpp"
+"rendering/precipitation.cpp"
+"scripting/pythonscreenviewer.cpp"
+"utilities/dictionary.cpp"
+"rendering/particles.cpp"
+"utilities/headtrack.cpp"
+"scripting/ladderlogic.cpp"
+"rendering/geometrybank.cpp"
+"rendering/openglcolor.cpp"
+"simulation/simulationsounds.cpp"
+"rendering/openglcamera.cpp"
 
 "network/network.cpp"
 "network/message.cpp"
@@ -210,6 +224,7 @@ set(SOURCES
 "imgui/imgui_draw.cpp"
 "imgui/imgui_widgets.cpp"
 "imgui/imgui_impl_glfw.cpp"
+"imgui/ImGuizmo.cpp"
 
 "stb/stb_image.c"
 
@@ -232,7 +247,7 @@ set_source_files_properties("imgui/imgui_impl_opengl2.cpp" PROPERTIES SKIP_PRECO
 
 if (WITH_CRASHPAD)
 	set(DEFINITIONS ${DEFINITIONS} "WITH_CRASHPAD")
-	set(SOURCES ${SOURCES} "crashreporter.cpp")
+	set(SOURCES ${SOURCES} "utilities/crashreporter.cpp")
 	if (WIN32)
 		include_directories("${DEPS_DIR}/crashpad/include" "${DEPS_DIR}/crashpad/include/mini_chromium")
 	else()
@@ -240,21 +255,21 @@ if (WITH_CRASHPAD)
 	endif()
 endif()
 
-if (WITH_PYTHON)
+if(WITH_PYTHON)
 	set(DEFINITIONS ${DEFINITIONS} "WITH_PYTHON")
-	set(SOURCES ${SOURCES} "PyInt.cpp")
+	set(SOURCES ${SOURCES} "scripting/PyInt.cpp")
 else()
-	set(SOURCES ${SOURCES} "PyIntStub.cpp")
+	set(SOURCES ${SOURCES} "scripting/PyIntStub.cpp")
 endif()
 
 if (WITH_UART)
 	set(DEFINITIONS ${DEFINITIONS} "WITH_UART")
-	set(SOURCES ${SOURCES} "uart.cpp")
+	set(SOURCES ${SOURCES} "utilities/uart.cpp")
 endif()
 
 if (WITH_ZMQ)
 	set(DEFINITIONS ${DEFINITIONS} "WITH_ZMQ")
-	set(SOURCES ${SOURCES} "zmq_input.cpp")
+	set(SOURCES ${SOURCES} "input/zmq_input.cpp")
 endif()
 
 if (WITH_OPENVR)
@@ -264,7 +279,7 @@ endif()
 
 if (WITH_LUA)
 	set(DEFINITIONS ${DEFINITIONS} "WITH_LUA")
-	set(SOURCES ${SOURCES} "lua.cpp")
+	set(SOURCES ${SOURCES} "scripting/lua.cpp")
 endif()
 
 if (WITHDUMPGEN)
@@ -273,23 +288,23 @@ endif()
 
 if (WITH_OPENGL_MODERN)
         set(SOURCES ${SOURCES}
-            "opengl33geometrybank.cpp"
-            "opengl33light.cpp"
-            "opengl33skydome.cpp"
-            "opengl33precipitation.cpp"
-            "opengl33particles.cpp"
-            "opengl33renderer.cpp")
+            "rendering/opengl33geometrybank.cpp"
+            "rendering/opengl33light.cpp"
+            "rendering/opengl33skydome.cpp"
+            "rendering/opengl33precipitation.cpp"
+            "rendering/opengl33particles.cpp"
+            "rendering/opengl33renderer.cpp")
 		set(DEFINITIONS ${DEFINITIONS} "WITH_OPENGL_MODERN")
 endif()
 
 if (WITH_OPENGL_LEGACY)
         set(SOURCES ${SOURCES}
-            "openglgeometrybank.cpp"
-            "opengllight.cpp"
-            "openglskydome.cpp"
-            "openglprecipitation.cpp"
-            "openglparticles.cpp"
-            "openglrenderer.cpp")
+            "rendering/openglgeometrybank.cpp"
+            "rendering/opengllight.cpp"
+            "rendering/openglskydome.cpp"
+            "rendering/openglprecipitation.cpp"
+            "rendering/openglparticles.cpp"
+            "rendering/openglrenderer.cpp")
 		set(DEFINITIONS ${DEFINITIONS} "WITH_OPENGL_LEGACY")
 endif()
 
@@ -329,6 +344,11 @@ endif()
 configure_file("${CMAKE_SOURCE_DIR}/version_info.h.in" "${CMAKE_BINARY_DIR}/geninc/version_info.h")
 
 set (PREFIX "")
+set (SUFFIX "")
+
+if (ADD_VERSION_SUFFIX)
+	set (SUFFIX "_${SRC_SHORT_DATE}_${GIT_HASH}")
+endif()
 
 set(OPENVR_LIBRARY "openvr_api")
 set(OPENVR_INCLUDE_DIR "")
@@ -344,7 +364,6 @@ if (WIN32)
 	set(OPENAL_INCLUDE_DIR ${OPENAL_INCLUDE_DIR} "${DEPS_DIR}/openal/include")
 	set(LIBSNDFILE_INCLUDE_DIR ${LIBSNDFILE_INCLUDE_DIR} "${DEPS_DIR}/libsndfile/include")
 	set(LUAJIT_INCLUDE_DIR ${LUAJIT_INCLUDE_DIR} "${DEPS_DIR}/luajit/include")
-	set(PYTHON_INCLUDE_DIR ${PYTHON_INCLUDE_DIR} "${DEPS_DIR}/python/include")
 	set(libserialport_INCLUDE_DIR ${LIBSERIALPORT_INCLUDE_DIR} "${DEPS_DIR}/libserialport/include")
 	set(OPENVR_INCLUDE_DIR "${DEPS_DIR}/openvr/include")
 
@@ -362,7 +381,6 @@ if (WIN32)
 	set(OPENAL_LIBRARY ${OPENAL_LIBRARY} "${DEPS_DIR}/openal/lib/${ARCH}/OpenAL32.lib")
 	set(LIBSNDFILE_LIBRARY ${LIBSNDFILE_LIBRARY} "${DEPS_DIR}/libsndfile/lib/${ARCH}/libsndfile-1.lib")
 	set(LUAJIT_LIBRARIES ${LUAJIT_LIBRARIES} "${DEPS_DIR}/luajit/lib/${ARCH}/lua51.lib")
-	set(PYTHON_LIBRARY ${PYTHON_LIBRARY} "${DEPS_DIR}/python/lib/${ARCH}/python27.lib")
 	set(libserialport_LIBRARY ${LIBSERIALPORT_LIBRARY} "${DEPS_DIR}/libserialport/lib/${ARCH}/libserialport-0.lib")
 	set(cppzmq_LIBRARY ${cppzmq_LIBRARY} "${DEPS_DIR}/cppzmq/lib/${ARCH}/libzmq.lib")
 	set(OPENVR_LIBRARY "${DEPS_DIR}/openvr/lib/${ARCH}/openvr_api.lib")
@@ -378,6 +396,8 @@ configure_file(${CMAKE_SOURCE_DIR}/eu07.rc.in
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     set(SOURCES ${SOURCES} ${CMAKE_BINARY_DIR}/eu07.rc)
     set(SOURCES ${SOURCES} eu07.ico)
+    set(SOURCES ${SOURCES} eu07.ico
+			editor/editorSettings.hpp)
     add_compile_options("/utf-8")
 endif()
 
@@ -400,6 +420,8 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " /MD /Zi /O2 /DNDEBUG")
 	set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO " /DEBUG /INCREMENTAL:NO /OPT:REF /OPT:ICF")
 
+	target_link_options(${PROJECT_NAME} PRIVATE "/MAP")
+
 	# /wd4996: disable "deprecation" warnings
 	# /wd4244: disable warnings for conversion with possible loss of data
 	# /wd5033: disable because it is all over Python headers
@@ -413,7 +435,7 @@ set_target_properties( ${PROJECT_NAME}
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     PDB_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/pdb"
-	OUTPUT_NAME "${PROJECT_NAME}${PREFIX}_${SRC_SHORT_DATE}_${GIT_HASH}"
+	OUTPUT_NAME "${PROJECT_NAME}${PREFIX}${SUFFIX}"
 	DEBUG_POSTFIX "_d"
 )
 
@@ -428,7 +450,7 @@ if(NOT ${CMAKE_VERSION} VERSION_LESS "3.16.0")
 	if (USE_PCH)
 		target_precompile_headers(${PROJECT_NAME} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/stdafx.h>")
 		set_source_files_properties("/glad/src/glad.c" "ref/dds-ktx/src/dds-ktx.c" "stb/stb_image.c"
-			"imgui/imgui.cpp" "imgui/imgui_demo.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_widgets.cpp" "imgui/imgui_impl_glfw.cpp"
+			"imgui/imgui.cpp" "imgui/imgui_demo.cpp" "imgui/imgui_draw.cpp" "imgui/imgui_widgets.cpp" "imgui/imgui_impl_glfw.cpp" "imgui/ImGuizmo.cpp"
 			PROPERTIES SKIP_PRECOMPILE_HEADERS TRUE)
 	endif()
 endif()
@@ -456,10 +478,23 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} glfw)
 
-if (WITH_PYTHON)
-	find_package(PythonLibs 2 REQUIRED)
-	target_include_directories(${PROJECT_NAME} PRIVATE ${PYTHON_INCLUDE_DIRS})
-	target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
+if(WITH_PYTHON)
+	find_package(Python3 3.14 REQUIRED COMPONENTS Development)
+	target_include_directories(${PROJECT_NAME} PRIVATE ${Python3_INCLUDE_DIRS})
+	target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
+
+	if(WIN32)
+		# Python3_ROOT_DIR is only an input hint and is not populated by
+		# find_package(... COMPONENTS Development). Derive the install root from
+		# the include dir (parent of <root>/include) when it was not provided.
+		if(NOT Python3_ROOT_DIR)
+			get_filename_component(Python3_ROOT_DIR "${Python3_INCLUDE_DIRS}" DIRECTORY)
+		endif()
+		set(EU07_PY_DLL "${Python3_ROOT_DIR}/python314.dll")
+		set(EU07_PY_ZLIB "${Python3_ROOT_DIR}/DLLs/zlib1.dll")
+		set(EU07_PY_LIBDIR "${Python3_ROOT_DIR}/Lib")
+		set(EU07_PY_DLLSDIR "${Python3_ROOT_DIR}/DLLs")
+	endif()
 endif()
 
 if (NOT WIN32)
@@ -497,7 +532,6 @@ if (WITH_DISCORD_RPC)
 else()
 	target_compile_definitions(${PROJECT_NAME} PUBLIC WITH_DISCORD_RPC=0)
 endif()
-
 
 find_package(OpenAL REQUIRED)
 if (TARGET OpenAL::OpenAL)
@@ -542,6 +576,16 @@ if (WIN32)
 	)
 endif ()
 
+if(WIN32 AND WITH_PYTHON)
+	add_custom_command(
+		TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "${EU07_PY_DLL}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different "${EU07_PY_ZLIB}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${EU07_PY_LIBDIR}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/python64/Lib"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${EU07_PY_DLLSDIR}" "$<TARGET_FILE_DIR:${PROJECT_NAME}>/python64/DLLs"
+	)
+endif()
+
 if (WITH_BETTER_RENDERER)
     add_subdirectory("betterRenderer")
 	set_target_properties(betterRenderer betterRenderer_fsr2 betterRenderer_shaders PROPERTIES FOLDER "renderers")
@@ -572,4 +616,13 @@ endif()
 if(ENABLE_MCC AND MSVC)
     message(STATUS "Enabling multi-processor compilation for MSVC.")
 	add_compile_options(/MP)
+endif()
+
+if(ENABLE_AVX2)
+    message(STATUS "Enabling AVX2 instruction set.")
+    if (MSVC)
+        target_compile_options(${PROJECT_NAME} PRIVATE /arch:AVX2)
+    else()
+        target_compile_options(${PROJECT_NAME} PRIVATE -mavx2)
+    endif()
 endif()
